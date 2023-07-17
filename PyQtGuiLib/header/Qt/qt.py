@@ -42,6 +42,9 @@ if PYQT_VERSIONS in ["PySide2","PySide6"]:
     WA_DeleteOnClose = Qt.WidgetAttribute.WA_DeleteOnClose
     WA_StyledBackground = Qt.WidgetAttribute.WA_StyledBackground
     WA_TranslucentBackground = Qt.WidgetAttribute.WA_TranslucentBackground
+    WA_TransparentForMouseEvents = Qt.WidgetAttribute.WA_TransparentForMouseEvents
+    WA_MouseTracking = Qt.WidgetAttribute.WA_MouseTracking
+    WA_AcceptDrops = Qt.WidgetAttribute.WA_AcceptDrops
 
     DotLine = Qt.PenStyle.DotLine
     DashLine = Qt.PenStyle.DashLine
@@ -129,15 +132,13 @@ if PYQT_VERSIONS in ["PySide2","PySide6"]:
     DisplayPropertyRole = Qt.ItemDataRole.DisplayPropertyRole
     ToolTipPropertyRole = Qt.ItemDataRole.ToolTipPropertyRole
     StatusTipPropertyRole = Qt.ItemDataRole.StatusTipPropertyRole
+    UserRole = Qt.ItemDataRole.UserRole
 
     ToolButtonIconOnly = Qt.ToolButtonStyle.ToolButtonIconOnly
     ToolButtonTextOnly = Qt.ToolButtonStyle.ToolButtonTextOnly
     ToolButtonFollowStyle = Qt.ToolButtonStyle.ToolButtonFollowStyle
     ToolButtonTextUnderIcon = Qt.ToolButtonStyle.ToolButtonTextUnderIcon
     ToolButtonTextBesideIcon = Qt.ToolButtonStyle.ToolButtonTextBesideIcon
-
-
-
 
     PM_LayoutHorizontalSpacing = QStyle.PixelMetric.PM_LayoutHorizontalSpacing
     PM_LayoutVerticalSpacing = QStyle.PixelMetric.PM_LayoutVerticalSpacing

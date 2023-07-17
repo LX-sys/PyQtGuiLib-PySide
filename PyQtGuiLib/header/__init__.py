@@ -22,8 +22,7 @@ from PyQtGuiLib.header.utility import (
     getTextSize,
     rgbToHsv,
     hsvToRgb,
-    loadUic,
-
+    loadUic
 )
 
 # 处理mac下无法运行的情况
