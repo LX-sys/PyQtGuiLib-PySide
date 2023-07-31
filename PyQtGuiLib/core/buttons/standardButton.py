@@ -38,10 +38,8 @@ class StandardButton(ButtonABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setIconSize(QSize(64,64))
-        self.setIcon(QIcon(r"D:\code\PyQtGuiLib-PySide\PyQtGuiLib\styles\styleObserver\IconElement.png"))
-        # print(QIcon.pixmap())
-        # print(self.icon().)
+        # self.setIconSize(QSize(50,50))
+        self.setIcon(r"D:\pySave\PyQtGuiLib-PySide\PyQtGuiLib\styles\styleObserver\EmojiTabSymbols_black.svg")
 
     def paint(self, painter: QPainter, e):
         rect = e.rect()  # type:QRect
@@ -77,12 +75,11 @@ class StandardButton(ButtonABC):
 
         pos = getDrawTextPos(e, font, self.text())
 
+        x = self.width() // 2 - self.iconSize().width() // 2
+        y = self.height() // 2 - self.iconSize().height() // 2
         if self.text():
-            x = pos.x()-self.iconSize().width()-10
-            y = pos.y()-self.iconSize().height()+10
-        else:
-            x = self.width()//2 - self.iconSize().width()//2
-            y = self.height()//2 - self.iconSize().height()//2
+            x = pos.x() - self.iconSize().width()-10
+            y = pos.y()-self.iconSize().height()+self.iconSize().height()//4
         painter.drawPixmap(x,y,self.icon().pixmap(self.iconSize()))
 
         # print(pos)
