@@ -8,7 +8,7 @@ from PyQtGuiLib.header import (
     QApplication,
     QPoint,
     QSize,
-    QFontMetricsF,
+    QFontMetrics,
     QFont,
     QWidget,
 )
@@ -54,11 +54,26 @@ def getDesktopCenter(parent) -> QPoint:
 
 
 def getTextSize(font:QFont,text:str) -> QSize:
-    fs = QFontMetricsF(font)
+    fs = QFontMetrics(font)
     if IS_QtIt:
-        return QSize(int(fs.horizontalAdvance(text)+1), int(fs.height()+1)) # +1 是为了补偿丢失的像素
+        return QSize(fs.horizontalAdvance(text)+1, fs.height()+1) # +1 是为了补偿丢失的像素
     else:
         return QSize(0,0)
+
+
+# 获取绘制文字位置
+def getDrawTextPos(e,font:QFont,text:str,offsetX=0,offsetY=0)->QPoint:
+    if IS_QtIt:
+        e_widht = e.rect().size().width()
+        e_height = e.rect().size().height()
+        fs = QFontMetrics(font)
+        size = QSize(fs.horizontalAdvance(text), fs.height())
+        x = e_widht // 2 - size.width() // 2 + offsetX
+        y = e_height // 2 - size.height() // 2 + fs.ascent() + offsetY
+        return QPoint(x,y)
+    else:
+        return QPoint(0, 0)
+
 
 
 def rgbToHsv(r, g, b):

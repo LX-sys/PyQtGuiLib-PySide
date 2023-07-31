@@ -12,8 +12,6 @@ class FlowLayout(QLayout):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.margin = -1
-        self.hSpacing = -1
-        self.vSpacing = -1
 
         self.items = []
         self.setSpacing(6)
@@ -62,10 +60,10 @@ class FlowLayout(QLayout):
 
         for w in self.items:  # type:QWidget
             wid = w.widget()
-            spaceX = self.horizontalSpacing()
+            spaceX = self.spacing()
             if spaceX == -1:
                 spaceX = wid.style().layoutSpacing(qt.PolicyPushButton,qt.PolicyPushButton,qt.Horizontal)
-            spaceY = self.verticalSpacing()
+            spaceY = self.spacing()
             if spaceY == -1:
                 spaceX = wid.style().layoutSpacing(qt.PolicyPushButton,qt.PolicyPushButton,qt.Vertical)
             nextX = x+w.sizeHint().width() + spaceX
@@ -81,18 +79,6 @@ class FlowLayout(QLayout):
             x = nextX
             lineHeight = max(lineHeight,w.sizeHint().height())
         return y+lineHeight-rect.y()+bottom
-
-    def horizontalSpacing(self):
-        if self.hSpacing >= 0:
-            return self.hSpacing
-        else:
-            return self.smartSpacing(qt.PM_LayoutHorizontalSpacing)
-
-    def verticalSpacing(self):
-        if self.hSpacing >= 0:
-            return self.hSpacing
-        else:
-            return self.smartSpacing(qt.PM_LayoutVerticalSpacing)
 
     def smartSpacing(self,pm) -> int:
         parent = self.parent()
