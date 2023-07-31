@@ -8,15 +8,26 @@ from PyQtGuiLib.header import (
     QAbstractButton,
     QSize,
     QPainter,
-    qt
+    qt,
+    QIcon
 )
+
+from typing import Union
 
 class ButtonABC(QAbstractButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.setIconSize(QSize(24,24))
+
     def sizeHint(self) -> QSize:
         return QSize(20, 20)
+    
+    def setIcon(self, icon:Union[str,QIcon], PySide6_QtGui_QIcon=None, PySide6_QtGui_QPixmap=None):
+        if isinstance(icon,str):
+            super().setIcon(QIcon(icon))
+        else:
+            super().setIcon(icon)
 
     def setText(self, text: str):
         super().setText(self.tr(text))
