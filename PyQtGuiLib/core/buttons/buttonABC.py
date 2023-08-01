@@ -9,16 +9,24 @@ from PyQtGuiLib.header import (
     QSize,
     QPainter,
     qt,
-    QIcon
+    QIcon,
+    QFont
 )
 
 from typing import Union
 
+
 class ButtonABC(QAbstractButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.init()
 
-        self.setIconSize(QSize(24,24))
+    def init(self):
+        font = QFont()
+        font.setPointSize(13)
+        self.setFont(font)
+
+        self.setIconSize(QSize(24, 24))
 
     def sizeHint(self) -> QSize:
         return QSize(20, 20)

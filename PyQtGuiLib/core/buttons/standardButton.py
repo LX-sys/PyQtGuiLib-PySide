@@ -13,6 +13,7 @@ from PyQtGuiLib.header import (
     QBrush,
     QRect,
     QSize,
+    QPoint,
     QWidget,
     qt,
     QFont,
@@ -24,7 +25,8 @@ from PyQtGuiLib.header import (
     QComboBox,
     QGraphicsDropShadowEffect,
     QListWidget,
-    QIcon
+    QIcon,
+    QLinearGradient
 )
 
 from PyQtGuiLib.core.buttons.buttonABC import ButtonABC
@@ -32,29 +34,15 @@ from PyQtGuiLib.core.buttons.buttonABC import ButtonABC
 from PyQtGuiLib.header.utility import getTextSize, getDrawTextPos
 
 from PyQtGuiLib.styles.styleObserver import StyleObserver, ControlTheme
+from PyQtGuiLib.styles.styleObserver.controlTheme import UniversalTheme
 
 
-class StandardButton(ButtonABC):
+# 具有文字图标的按钮
+class TextButton(ButtonABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # self.setIconSize(QSize(50,50))
-        self.setIcon(r"D:\pySave\PyQtGuiLib-PySide\PyQtGuiLib\styles\styleObserver\EmojiTabSymbols_black.svg")
-
     def paint(self, painter: QPainter, e):
-        rect = e.rect()  # type:QRect
-
-        if not self.isEnabled():
-            bg = ControlTheme.Background.EnabledColor
-            fc = StyleObserver.foregroundColor()
-        else:
-            bg = StyleObserver.backgroundColor()
-            fc = StyleObserver.foregroundColor()
-
-        painter.setPen(fc)
-        painter.setBrush(bg)
-        painter.drawRoundedRect(rect, 5, 5)
-
         if self.isDown():
             fc = StyleObserver.foregroundColor().getRgb()
             fc = QColor(*fc)
@@ -62,30 +50,78 @@ class StandardButton(ButtonABC):
             color = fc
         else:
             color = StyleObserver.foregroundColor()
-            if StyleObserver.backgroundColor().name() == ControlTheme.Background.White.name():
-                color = ControlTheme.Foreground.Black
 
         if not self.isEnabled():
             color = ControlTheme.Foreground.EnabledColor
         painter.setPen(color)
 
-        font = QFont()
-        font.setPointSize(13)
-        painter.setFont(font)
+        painter.setFont(self.font())
 
-        pos = getDrawTextPos(e, font, self.text())
+        pos = getDrawTextPos(e, self.font(), self.text())
 
         x = self.width() // 2 - self.iconSize().width() // 2
         y = self.height() // 2 - self.iconSize().height() // 2
         if self.text():
-            x = pos.x() - self.iconSize().width()-10
-            y = pos.y()-self.iconSize().height()+self.iconSize().height()//4
-        painter.drawPixmap(x,y,self.icon().pixmap(self.iconSize()))
+            x = pos.x() - self.iconSize().width() - 10
+            y = pos.y() - self.iconSize().height() + self.iconSize().height() // 4
+        painter.drawPixmap(x, y, self.icon().pixmap(self.iconSize()))
 
         # print(pos)
         # painter.drawText(getDrawTextPos(e, font, self.text()), self.text())
         if self.text():
             painter.drawText(e.rect(), qt.AlignCenter, self.text())
+
+    def drawCustomGraphStyle(self, painter: QPainter,e):
+        raise NotImplementedError("Customize the graphic style")
+
+
+class StandardButton(TextButton):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # self.setIconSize(QSize(50,50))
+        self.setIcon(r"../../styles/styleObserver/EmojiTabSymbols_black.svg")
+
+    # 绘制自定义风格(默认风格按钮风格)
+    def drawCustomGraphStyle(self, painter: QPainter,e):
+        painter.drawRoundedRect(e.rect(), 5, 5)
+
+    def backgroundOption(self,painter: QPainter):
+        if not self.isEnabled():
+            bg = ControlTheme.Background.EnabledColor
+            fc = qt.NoPen
+        else:
+            bg = StyleObserver.backgroundColor()
+            fc = qt.NoPen
+
+        painter.setPen(fc)
+        painter.setBrush(bg)
+
+    def drawForeground(self):
+        pass
+
+    def paint(self, painter: QPainter, e):
+        self.backgroundOption(painter)
+        self.drawCustomGraphStyle(painter,e)
+
+        super().paint(painter,e)
+
+
+class GradientButton(TextButton):
+
+    def drawCustomGraphStyle(self, painter: QPainter, e):
+        painter.drawRoundedRect(e.rect(),5,5)
+
+    def paint(self, painter: QPainter, e):
+        linearGrad = QLinearGradient(QPoint(0,0), QPoint(self.width(),self.height()))
+        linearGrad.setColorAt(0, qt.black)
+        linearGrad.setColorAt(1, qt.white)
+
+        painter.setPen(qt.NoPen)
+        painter.setBrush(linearGrad)
+
+        self.drawCustomGraphStyle(painter,e)
+        super().paint(painter,e)
 
 
 class ShadowButton(StandardButton):
@@ -117,7 +153,7 @@ class TestShow(QWidget):
         self.vlay = QVBoxLayout(self)
         self.vlay.setSpacing(10)
         self.combox = QComboBox()
-        self.combox.addItems(["默认", "红色", "绿色", "白色", "黑色"])
+        self.combox.addItems(UniversalTheme.allColorNames())
         self.combox.currentTextChanged.connect(self.changeTheme)
 
         self.btn = StandardButton(self)
@@ -131,21 +167,17 @@ class TestShow(QWidget):
         self.sbtn.setText("带阴影")
         self.sbtn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
+        self.gradbtn = GradientButton(self)
+        self.gradbtn.setText("渐变效果")
+        self.gradbtn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
         self.vlay.addWidget(self.combox)
         self.vlay.addWidget(self.btn)
         self.vlay.addWidget(self.sbtn)
+        self.vlay.addWidget(self.gradbtn)
 
-    def changeTheme(self, text):
-        if text == "默认":
-            StyleObserver.setThemeColor(ControlTheme.Background.Default)
-        elif text == "红色":
-            StyleObserver.setThemeColor(ControlTheme.Background.Red)
-        elif text == "绿色":
-            StyleObserver.setThemeColor(ControlTheme.Background.Green)
-        elif text == "白色":
-            StyleObserver.setThemeColor(ControlTheme.Background.White)
-        elif text == "黑色":
-            StyleObserver.setThemeColor(ControlTheme.Background.Black)
+    def changeTheme(self, s_color):
+        StyleObserver.setThemeColor(UniversalTheme.getColor(s_color))
 
 
 if __name__ == '__main__':

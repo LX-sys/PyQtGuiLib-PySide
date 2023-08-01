@@ -8,6 +8,9 @@ from PyQtGuiLib.header import (
 )
 
 from PyQtGuiLib.styles.styleObserver.controlTheme import ControlTheme
+from PyQtGuiLib.styles.styleObserver.colorVisualFormula import ColorAlgorithm,ForegroundVision
+
+from typing import Callable
 
 
 class StyleObserver:
@@ -15,13 +18,26 @@ class StyleObserver:
         样式观察者
     '''
     _ThemeBGColor = ControlTheme.Background.Default
-    _ThemeFGColor = ControlTheme.Foreground.White
+    # _ThemeFColor = ControlTheme.Foreground.Default
+
+    _ColorForegroundFun = ForegroundVision.humanVision
+    _ColorBackgroundFun = ForegroundVision.origin
 
     @staticmethod
-    def setThemeColor(bg_color:QColor,fg_color=None):
-        StyleObserver._ThemeBGColor = bg_color
-        if fg_color:
-            StyleObserver._ThemeFGColor = fg_color
+    def colorFAlgorithm(algorithm:Callable = None):
+        '''通过改函数,可以修改前景色的计算 算法,默认算法返回 黑/白 两色'''
+        StyleObserver._ColorForegroundFun = algorithm if algorithm else ForegroundVision.humanVision
+
+    @staticmethod
+    def colorBGAlgorithm(algorithm:Callable = None):
+        '''
+            通过改函数,可以修改背景色的计算 算法,默认算法返回 原型
+        '''
+        StyleObserver._ColorBackgroundFun = algorithm if algorithm else ColorAlgorithm.origin
+
+    @staticmethod
+    def setThemeColor(bg_color:QColor):
+        StyleObserver._ThemeBGColor = StyleObserver._ColorBackgroundFun(bg_color)
 
     @staticmethod
     def backgroundColor():
@@ -29,4 +45,4 @@ class StyleObserver:
 
     @staticmethod
     def foregroundColor():
-        return StyleObserver._ThemeFGColor
+        return StyleObserver._ColorForegroundFun(StyleObserver._ThemeBGColor)
