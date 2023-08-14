@@ -128,18 +128,48 @@ class ShadowButton(StandardButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self._offx = 0
+        self._offy = 0
+        self._blueradius = 15
+
         self.shadow = QGraphicsDropShadowEffect(self)
-        self.shadow.setOffset(0, 0)
-        self.shadow.setBlurRadius(10)
-        self.shadow.setColor(StyleObserver.backgroundColor())
+        self.shadow.setOffset(self._offx,self._offy)
+        self.shadow.setBlurRadius(self._blueradius)
+        # self.shadow.setColor(StyleObserver.backgroundColor())
+        self.shadow.setColor(ControlTheme.Background.Red)
         self.setGraphicsEffect(self.shadow)
+
+    def hover(self,event):
+        self.shadow.setBlurRadius(15)
+        self.shadow.setColor(ControlTheme.Background.Red)
+
+    def leave(self,event):
+        self.shadow.setBlurRadius(10)
+
+    def press(self,e):
+        pass
+
+    def release(self,e):
+        pass
 
     def paint(self, painter: QPainter, e):
         super().paint(painter, e)
-        self.shadow.setColor(
-            ControlTheme.Background.EnabledColor
-            if not self.isEnabled() else
-            StyleObserver.backgroundColor())
+        if self.isHover():
+            pass
+        else:
+            r,g,b,a = StyleObserver.backgroundColor().getRgb()
+            # print(r,g,b,a)
+            value = int((255*0.299)+(g*0.587)+(b*0.114))
+            # print(value)
+            s_r = min(255, max(0, r + (0 - r)*(value-value)/(0-255)))
+            s_g = min(255, max(0, g + (0 - g)*(value-value)/(0-255)))
+            s_b = min(255, max(0, b + (0 - b)*(value-value)/(0-255)))
+            # print(s_r,s_g,s_b)
+            # self.shadow.setColor(QColor(s_r,s_g,s_b,255))
+            self.shadow.setColor(
+                            ControlTheme.Background.EnabledColor
+                            if not self.isEnabled() else
+                            StyleObserver.backgroundColor())
         self.update()
 
 
@@ -156,25 +186,25 @@ class TestShow(QWidget):
         self.combox.addItems(UniversalTheme.allColorNames())
         self.combox.currentTextChanged.connect(self.changeTheme)
 
-        self.btn = StandardButton(self)
+        self.btn = StandardButton()
         # self.btn.setEnabled(False)
         # self.btn.setText("Hello Wrold")
         self.btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.btn.setGeometry(100, 100, 140, 50)
 
-        self.sbtn = ShadowButton(self)
+        self.sbtn = ShadowButton()
         # self.sbtn.setEnabled(False)
         self.sbtn.setText("带阴影")
         self.sbtn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self.gradbtn = GradientButton(self)
+        self.gradbtn = GradientButton()
         self.gradbtn.setText("渐变效果")
         self.gradbtn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self.vlay.addWidget(self.combox)
-        self.vlay.addWidget(self.btn)
+        # self.vlay.addWidget(self.btn)
         self.vlay.addWidget(self.sbtn)
-        self.vlay.addWidget(self.gradbtn)
+        # self.vlay.addWidget(self.gradbtn)
 
     def changeTheme(self, s_color):
         StyleObserver.setThemeColor(UniversalTheme.getColor(s_color))

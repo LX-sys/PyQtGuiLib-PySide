@@ -19,6 +19,9 @@ from typing import Union
 class ButtonABC(QAbstractButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._isHover = False
+        self._isPress = False
+
         self.init()
 
     def init(self):
@@ -49,5 +52,39 @@ class ButtonABC(QAbstractButton):
 
         painter.end()
 
+    def enterEvent(self, event):
+        self._isHover = True
+        self.hover(event)
+
+    def leaveEvent(self, event):
+        self._isHover = False
+        self.leave(event)
+
+    def mousePressEvent(self, e):
+        self._isPress = True
+        self.press(e)
+
+    def mouseReleaseEvent(self, e):
+        self._isPress = False
+        self.release(e)
+
+    def hover(self,event):
+        raise NotImplementedError("Subclasses must implement the hover() method")
+
+    def leave(self,event):
+        raise NotImplementedError("Subclasses must implement the leave() method")
+
+    def press(self,e):
+        raise NotImplementedError("Subclasses must implement the press() method")
+
+    def release(self,e):
+        raise NotImplementedError("Subclasses must implement the release() method")
+
     def paint(self,painter:QPainter,e):
         raise NotImplementedError("Subclasses must implement the paint() method")
+
+    def isHover(self) -> bool:
+        return self._isHover
+
+    def isPress(self) -> bool:
+        return self._isPress
